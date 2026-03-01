@@ -1,0 +1,16 @@
+[
+  {
+    "symbol": "TSLA",
+    "timestamp": "2026-03-01T12:13:06.513929",
+    "prediction": {
+      "direction": "sideways",
+      "confidence": 0.5,
+      "timeframe": "1d"
+    },
+    "based_on": {
+      "sentiment_label": "positive",
+      "polarity": 0.209,
+      "articles": 5
+    }
+  }
+]

@@ -1,0 +1,338 @@
+[
+  {
+    "symbol": "TSLA",
+    "timestamp": "2026-03-01T12:12:26.758199",
+    "articles_analyzed": 5,
+    "overall_sentiment": {
+      "polarity": 0.209,
+      "subjectivity": 0.371,
+      "label": "positive"
+    },
+    "label_distribution": {
+      "positive": 4,
+      "neutral": 1,
+      "negative": 0
+    },
+    "articles": [
+      {
+        "polarity": 0.472,
+        "subjectivity": 0.733,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.433,
+          "subjectivity": 0.733
+        },
+        "vader": {
+          "compound": 0.511,
+          "positive": 0.355,
+          "neutral": 0.645,
+          "negative": 0.0
+        },
+        "title": "TSLA Stock Rises on Strong Earnings Report",
+        "source": "Financial Times",
+        "url": "https://example.com/news1",
+        "published_at": "2026-03-01T12:12:26.635880"
+      },
+      {
+        "polarity": 0.0,
+        "subjectivity": 0.0,
+        "label": "neutral",
+        "textblob": {
+          "polarity": 0.0,
+          "subjectivity": 0.0
+        },
+        "vader": {
+          "compound": 0.0,
+          "positive": 0.0,
+          "neutral": 1.0,
+          "negative": 0.0
+        },
+        "title": "Analysts Upgrade TSLA Price Target",
+        "source": "Bloomberg",
+        "url": "https://example.com/news2",
+        "published_at": "2026-03-01T10:12:26.635880"
+      },
+      {
+        "polarity": 0.068,
+        "subjectivity": 0.455,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.136,
+          "subjectivity": 0.455
+        },
+        "vader": {
+          "compound": 0.0,
+          "positive": 0.0,
+          "neutral": 1.0,
+          "negative": 0.0
+        },
+        "title": "TSLA Announces New Product Launch",
+        "source": "Reuters",
+        "url": "https://example.com/news3",
+        "published_at": "2026-03-01T07:12:26.635880"
+      },
+      {
+        "polarity": 0.148,
+        "subjectivity": 0.0,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.0,
+          "subjectivity": 0.0
+        },
+        "vader": {
+          "compound": 0.296,
+          "positive": 0.355,
+          "neutral": 0.645,
+          "negative": 0.0
+        },
+        "title": "Market Volatility Affects TSLA Shares",
+        "source": "CNBC",
+        "url": "https://example.com/news4",
+        "published_at": "2026-03-01T04:12:26.635880"
+      },
+      {
+        "polarity": 0.358,
+        "subjectivity": 0.667,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.333,
+          "subjectivity": 0.667
+        },
+        "vader": {
+          "compound": 0.382,
+          "positive": 0.302,
+          "neutral": 0.698,
+          "negative": 0.0
+        },
+        "title": "TSLA CEO Makes Bold Statement at Conference",
+        "source": "Wall Street Journal",
+        "url": "https://example.com/news5",
+        "published_at": "2026-03-01T00:12:26.635880"
+      }
+    ]
+  },
+  {
+    "symbol": "TSLA",
+    "timestamp": "2026-03-01T12:12:53.133207",
+    "articles_analyzed": 5,
+    "overall_sentiment": {
+      "polarity": 0.209,
+      "subjectivity": 0.371,
+      "label": "positive"
+    },
+    "label_distribution": {
+      "positive": 4,
+      "neutral": 1,
+      "negative": 0
+    },
+    "articles": [
+      {
+        "polarity": 0.472,
+        "subjectivity": 0.733,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.433,
+          "subjectivity": 0.733
+        },
+        "vader": {
+          "compound": 0.511,
+          "positive": 0.355,
+          "neutral": 0.645,
+          "negative": 0.0
+        },
+        "title": "TSLA Stock Rises on Strong Earnings Report",
+        "source": "Financial Times",
+        "url": "https://example.com/news1",
+        "published_at": "2026-03-01T12:12:53.066518"
+      },
+      {
+        "polarity": 0.0,
+        "subjectivity": 0.0,
+        "label": "neutral",
+        "textblob": {
+          "polarity": 0.0,
+          "subjectivity": 0.0
+        },
+        "vader": {
+          "compound": 0.0,
+          "positive": 0.0,
+          "neutral": 1.0,
+          "negative": 0.0
+        },
+        "title": "Analysts Upgrade TSLA Price Target",
+        "source": "Bloomberg",
+        "url": "https://example.com/news2",
+        "published_at": "2026-03-01T10:12:53.066518"
+      },
+      {
+        "polarity": 0.068,
+        "subjectivity": 0.455,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.136,
+          "subjectivity": 0.455
+        },
+        "vader": {
+          "compound": 0.0,
+          "positive": 0.0,
+          "neutral": 1.0,
+          "negative": 0.0
+        },
+        "title": "TSLA Announces New Product Launch",
+        "source": "Reuters",
+        "url": "https://example.com/news3",
+        "published_at": "2026-03-01T07:12:53.066518"
+      },
+      {
+        "polarity": 0.148,
+        "subjectivity": 0.0,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.0,
+          "subjectivity": 0.0
+        },
+        "vader": {
+          "compound": 0.296,
+          "positive": 0.355,
+          "neutral": 0.645,
+          "negative": 0.0
+        },
+        "title": "Market Volatility Affects TSLA Shares",
+        "source": "CNBC",
+        "url": "https://example.com/news4",
+        "published_at": "2026-03-01T04:12:53.066518"
+      },
+      {
+        "polarity": 0.358,
+        "subjectivity": 0.667,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.333,
+          "subjectivity": 0.667
+        },
+        "vader": {
+          "compound": 0.382,
+          "positive": 0.302,
+          "neutral": 0.698,
+          "negative": 0.0
+        },
+        "title": "TSLA CEO Makes Bold Statement at Conference",
+        "source": "Wall Street Journal",
+        "url": "https://example.com/news5",
+        "published_at": "2026-03-01T00:12:53.066518"
+      }
+    ]
+  },
+  {
+    "symbol": "TSLA",
+    "timestamp": "2026-03-01T12:13:52.591640",
+    "articles_analyzed": 5,
+    "overall_sentiment": {
+      "polarity": 0.209,
+      "subjectivity": 0.371,
+      "label": "positive"
+    },
+    "label_distribution": {
+      "positive": 4,
+      "neutral": 1,
+      "negative": 0
+    },
+    "articles": [
+      {
+        "polarity": 0.472,
+        "subjectivity": 0.733,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.433,
+          "subjectivity": 0.733
+        },
+        "vader": {
+          "compound": 0.511,
+          "positive": 0.355,
+          "neutral": 0.645,
+          "negative": 0.0
+        },
+        "title": "TSLA Stock Rises on Strong Earnings Report",
+        "source": "Financial Times",
+        "url": "https://example.com/news1",
+        "published_at": "2026-03-01T12:13:52.516295"
+      },
+      {
+        "polarity": 0.0,
+        "subjectivity": 0.0,
+        "label": "neutral",
+        "textblob": {
+          "polarity": 0.0,
+          "subjectivity": 0.0
+        },
+        "vader": {
+          "compound": 0.0,
+          "positive": 0.0,
+          "neutral": 1.0,
+          "negative": 0.0
+        },
+        "title": "Analysts Upgrade TSLA Price Target",
+        "source": "Bloomberg",
+        "url": "https://example.com/news2",
+        "published_at": "2026-03-01T10:13:52.516295"
+      },
+      {
+        "polarity": 0.068,
+        "subjectivity": 0.455,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.136,
+          "subjectivity": 0.455
+        },
+        "vader": {
+          "compound": 0.0,
+          "positive": 0.0,
+          "neutral": 1.0,
+          "negative": 0.0
+        },
+        "title": "TSLA Announces New Product Launch",
+        "source": "Reuters",
+        "url": "https://example.com/news3",
+        "published_at": "2026-03-01T07:13:52.516295"
+      },
+      {
+        "polarity": 0.148,
+        "subjectivity": 0.0,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.0,
+          "subjectivity": 0.0
+        },
+        "vader": {
+          "compound": 0.296,
+          "positive": 0.355,
+          "neutral": 0.645,
+          "negative": 0.0
+        },
+        "title": "Market Volatility Affects TSLA Shares",
+        "source": "CNBC",
+        "url": "https://example.com/news4",
+        "published_at": "2026-03-01T04:13:52.516295"
+      },
+      {
+        "polarity": 0.358,
+        "subjectivity": 0.667,
+        "label": "positive",
+        "textblob": {
+          "polarity": 0.333,
+          "subjectivity": 0.667
+        },
+        "vader": {
+          "compound": 0.382,
+          "positive": 0.302,
+          "neutral": 0.698,
+          "negative": 0.0
+        },
+        "title": "TSLA CEO Makes Bold Statement at Conference",
+        "source": "Wall Street Journal",
+        "url": "https://example.com/news5",
+        "published_at": "2026-03-01T00:13:52.516295"
+      }
+    ]
+  }
+]
