@@ -1,277 +1,161 @@
-# 📊 stocksight - 股市情感分析工具
+# stocksight-skill
 
-**简化版 stocksight for OpenClaw** - 基于新闻情感分析的股市预测工具
+把一只股票的真实新闻聚合起来，跑多种情感分析，给出可读的多空信号。
 
-![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+支持 A 股（akshare）+ 美股（yfinance）两套数据源，以及 4 个情感分析 backend（VADER、TextBlob、SnowNLP、FinBERT），按语言自动路由。
 
-## 🌟 功能特性
+## 一、它解决什么问题
 
-- 📰 **新闻情感分析**：自动抓取财经新闻并分析情感倾向
-- 📈 **价格预测**：基于情感数据预测短期股价走势
-- 💾 **本地存储**：无需 Elasticsearch，使用 JSON 本地存储
-- 🔧 **简化配置**：最小化 API 依赖，开箱即用
-- 🎯 **OpenClaw 集成**：作为 Skill 无缝集成到 OpenClaw
+写量化或基本面研究时，"市场对这只股票的近期情绪"是常用但难量化的输入。手动看新闻不可扩展，单一情感模型在金融领域准确率差（VADER 连"beat earnings"这种积极信号都识别不出来），中英文混合场景下尤其混乱。
 
-## 🚀 快速开始
+本项目把"拉新闻"和"算情感"两件事都做到可用：
 
-### 1. 安装依赖
+- 拉新闻：akshare 拿 A 股个股新闻、yfinance 拿美股个股新闻，公开渠道不需要 key
+- 算情感：4 个 backend 可选，按语言自动路由，FinBERT 专门处理英文金融文本
+- 聚合：把多条情感汇总成一个统计信号（均值极性 + 标签分布 + 多空判断）
+
+## 二、架构
+
+```
+   股票代码 (600519 / AAPL / ...)
+        │
+        ▼
+   news_sources.fetch_news()  根据代码格式自动路由
+   ├── 6 位数字 → akshare.stock_news_em (A 股)
+   ├── 含字母   → yfinance.Ticker.news  (美股)
+   └── 显式     → NewsAPI.org           (需 NEWSAPI_KEY)
+        │
+        ▼
+   List[NewsItem]
+        │
+        ▼
+   sentiment.analyze_batch()  按文本语言自动路由
+   ├── 中文为主 → SnowNLP
+   ├── 英文为主 → VADER (默认) 或 FinBERT (--backend finbert)
+   └── 显式     → TextBlob
+        │
+        ▼
+   sentiment.aggregate()  统计聚合
+        │
+        ▼
+   {n, mean_polarity, label_dist, signal: positive/neutral/negative}
+```
+
+4 个情感 backend 的特点：
+
+| Backend | 适用 | 速度 | 依赖体积 | 备注 |
+|---|---|---|---|---|
+| vader | 英文通用 | 极快 | 小 | 规则+词典，金融术语理解差 |
+| textblob | 英文通用 | 快 | 小 | polarity + subjectivity |
+| snownlp | 中文 | 快 | 小 | 默认中文路由 |
+| finbert | 英文金融领域 | 慢（首次加载约 30s） | ~400MB | ProsusAI/finbert，对 beat / record 等金融积极词识别准 |
+
+## 三、快速开始
+
+### 安装
 
 ```bash
-cd stocksight-skill
 pip install -r requirements.txt
+# 用 A 股新闻
+pip install akshare
+# 用美股新闻
+pip install yfinance
+# 用 FinBERT（可选，模型较大）
+pip install transformers torch
 ```
 
-### 2. 下载 NLTK 数据
+### CLI
 
 ```bash
-python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
+# 拉新闻清单
+python __main__.py news 600519                # 茅台 A 股新闻
+python __main__.py news AAPL                  # 苹果美股新闻
+python __main__.py news AAPL --limit 30 -o news.json
+
+# 新闻 + 情感分析 → 聚合信号
+python __main__.py analyze 600519 --backend snownlp -o report.json
+python __main__.py analyze TSLA --backend finbert     # 用金融领域 BERT
+python __main__.py analyze NVDA --backend vader       # 默认快但金融词差
+
+# 单段文本快速测
+python __main__.py sentiment "苹果发布新品大获成功" --backend snownlp
+python __main__.py sentiment "The company filed for bankruptcy" --backend vader
+python __main__.py sentiment "Q3 EPS beat expectations" --backend finbert
+
+# 看支持的 backend
+python __main__.py list-backends
 ```
 
-### 3. 运行分析
-
-```bash
-# 分析股票情感
-python scripts/stocksight.py --symbol TSLA --analyze
-
-# 获取新闻并分析
-python scripts/stocksight.py --symbol AAPL --news
-
-# 生成价格预测
-python scripts/stocksight.py --symbol NVDA --predict
-
-# 查看历史数据
-python scripts/stocksight.py --symbol TSLA --history
-```
-
-## 📖 详细用法
-
-### 基本命令
-
-| 命令 | 说明 |
-|------|------|
-| `--symbol TSLA` | 指定股票代号（必需） |
-| `--analyze` | 分析当前情感 |
-| `--news` | 抓取新闻并分析 |
-| `--predict` | 生成价格预测 |
-| `--history` | 查看历史记录 |
-| `--verbose` | 详细输出模式 |
-
-### 示例输出
-
-```
-============================================================
-📊 STOCKSIGHT ANALYSIS: TSLA
-============================================================
-
-📰 Articles Analyzed: 15
-
-💭 Overall Sentiment:
-   Label: POSITIVE
-   Polarity: 0.42
-   Subjectivity: 0.65
-
-📈 Label Distribution:
-   Positive: 9
-   Neutral: 4
-   Negative: 2
-
-📝 Recent Headlines:
-   1. ✅ [POSITIVE] Tesla Stock Rises on Strong Earnings...
-   2. ✅ [POSITIVE] Analysts Upgrade TSLA Price Target...
-   3. ➖ [NEUTRAL] Market Volatility Affects Tesla Shares...
-   4. ✅ [POSITIVE] Tesla Announces New Product Launch...
-   5. ❌ [NEGATIVE] Production Delays Reported...
-
-🔮 Price Prediction (1 day):
-   Direction: 📈 UP
-   Confidence: 72.5%
-
-============================================================
-```
-
-## ⚙️ 配置说明
-
-### config.json 配置项
-
-```json
-{
-  "news_api_key": "",           // NewsAPI 密钥（可选）
-  "twitter_api_key": "",        // Twitter API 密钥（可选）
-  "default_frequency": 300,     // 数据刷新频率（秒）
-  "sentiment_threshold": 0.3,   // 情感阈值
-  "storage_path": "./data",     // 数据存储路径
-  "news_sources": ["yahoo", "google", "reuters"],  // 新闻源
-  "max_articles": 20,           // 最大文章数
-  "cache_hours": 1              // 缓存时间（小时）
-}
-```
-
-### 获取 NewsAPI 密钥（可选）
-
-1. 访问 https://newsapi.org/
-2. 注册免费账户
-3. 获取 API Key
-4. 填入 `config.json` 的 `news_api_key` 字段
-
-**注意**：即使没有 API Key，工具也会使用模拟数据进行演示。
-
-## 📁 项目结构
-
-```
-stocksight-skill/
-├── SKILL.md              # OpenClaw Skill 定义
-├── README.md             # 使用说明（本文件）
-├── requirements.txt      # Python 依赖
-├── config.json           # 配置文件
-├── scripts/
-│   └── stocksight.py     # 主脚本
-├── data/
-│   ├── {symbol}_sentiment.json    # 情感历史数据
-│   └── {symbol}_predictions.json  # 预测历史数据
-└── references/
-    └── api-docs.md       # API 文档
-```
-
-## 🔬 技术原理
-
-### 情感分析算法
-
-stocksight 使用两种 NLP 工具进行情感分析：
-
-1. **TextBlob**: 计算极性 (polarity) 和主观性 (subjectivity)
-   - 极性范围：-1.0 (负面) 到 1.0 (正面)
-   - 主观性范围：0.0 (客观) 到 1.0 (主观)
-
-2. **VADER Sentiment**: 专门针对社交媒体优化的情感分析
-   - 输出 compound 分数：-1.0 到 1.0
-   - 分别计算正面、中性、负面比例
-
-3. **综合算法**:
-   ```python
-   combined_polarity = (textblob_polarity + vader_compound) / 2
-   
-   if combined_polarity >= 0.05:
-       label = "positive"
-   elif combined_polarity <= -0.05:
-       label = "negative"
-   else:
-       label = "neutral"
-   ```
-
-### 价格预测逻辑
-
-基于情感数据的简单预测模型：
+### 库调用
 
 ```python
-if sentiment == "positive" and polarity > 0.3:
-    direction = "up"
-    confidence = 0.5 + polarity * 0.4
-elif sentiment == "negative" and polarity < -0.3:
-    direction = "down"
-    confidence = 0.5 + abs(polarity) * 0.4
-else:
-    direction = "sideways"
-    confidence = 0.5
+from scripts.news_sources import fetch_news
+from scripts.sentiment import analyze_batch, aggregate
+
+items = fetch_news("600519", limit=20)        # 自动路由到 akshare
+texts = [(it.title + "。" + it.summary).strip() for it in items]
+scores = analyze_batch(texts, backend="auto") # 自动选 snownlp（中文）
+signal = aggregate(scores)
+print(signal["signal"], signal["mean_polarity"])
 ```
 
-**注意**：这是简化版预测，实际交易请使用更复杂的量化模型。
+## 四、设计取舍
 
-## 📊 数据存储
+**为什么不只用 VADER？**
 
-### 情感数据格式
+VADER 词典里没有 beat / record / miss / guidance 这种金融语境下情绪很强的词。对纯财经新闻准确率明显低于 FinBERT。VADER 留作"快速无依赖"兜底。
 
-```json
-{
-  "symbol": "TSLA",
-  "timestamp": "2026-03-01T12:00:00Z",
-  "articles_analyzed": 15,
-  "overall_sentiment": {
-    "polarity": 0.42,
-    "subjectivity": 0.65,
-    "label": "positive"
-  },
-  "label_distribution": {
-    "positive": 9,
-    "neutral": 4,
-    "negative": 2
-  },
-  "articles": [...]
-}
+**为什么不只用 FinBERT？**
+
+模型 400MB，加载约 30 秒，每次推理也慢。日常快速看一眼用 VADER 就够了，做严肃因子时切到 FinBERT。
+
+**为什么 A 股用 akshare 而不是自己爬？**
+
+akshare 已经包装了东方财富的公开接口，处理了反爬限速，不需要自己维护爬虫。代价是接口字段名可能随东方财富升级变动，所以用 ``_pick(row, aliases)`` 兼容多个候选列名做了缓冲。
+
+**为什么不内置 LLM 综合判断？**
+
+"算每条新闻的情感"是统计任务，FinBERT 已经够好。LLM 适合做的是"这堆情感信号说明什么投资逻辑"——那是上游策略层的事，不在本工具范围。
+
+## 五、目录结构
+
+```
+.
+├── __main__.py                   CLI (news / analyze / sentiment / list-backends)
+├── scripts/
+│   ├── news_sources.py           akshare / yfinance / NewsAPI 三源 + 自动路由
+│   ├── sentiment.py              4 backend 情感分析 + 语言自动路由 + 聚合
+│   └── stocksight.py             v1 留存的 CLI（兼容）
+├── tests/
+│   ├── test_news_sources.py      monkeypatch 不打真实网络
+│   └── test_sentiment.py         polarity / label / aggregate 数学性质
+├── references/
+├── data/
+├── requirements.txt
+└── README.md
 ```
 
-### 预测数据格式
+## 六、测试
 
-```json
-{
-  "symbol": "TSLA",
-  "timestamp": "2026-03-01T12:00:00Z",
-  "prediction": {
-    "direction": "up",
-    "confidence": 0.725,
-    "timeframe": "1d"
-  },
-  "based_on": {
-    "sentiment_label": "positive",
-    "polarity": 0.42,
-    "articles": 15
-  }
-}
-```
-
-## ⚠️ 免责声明
-
-**重要提示**：
-
-1. **本工具仅供学习和研究使用**
-2. **不构成任何投资建议**
-3. **股市有风险，投资需谨慎**
-4. **情感分析存在误差，请结合其他指标**
-5. **作者不对任何交易损失负责**
-
-## 🔧 故障排除
-
-### 常见问题
-
-**Q: 安装时出现编码错误**
 ```bash
-# Windows PowerShell 解决方案
-$env:PYTHONIOENCODING="utf-8"
-pip install -r requirements.txt
+pytest tests/
 ```
 
-**Q: NLTK 数据下载失败**
-```bash
-# 手动下载
-python -m nltk.downloader punkt
-python -m nltk.downloader stopwords
-```
+24 个测试覆盖：
+- 语言判断（中文 / 英文 / 混合）
+- 4 个 backend 的 polarity 范围与 label 一致性
+- 多源新闻 fetcher 字段映射（akshare 中文列名 / yfinance）
+- 自动路由（6 位数字 → akshare、含字母 → yfinance）
+- aggregate 统计聚合
 
-**Q: 没有真实新闻数据**
-- 检查 `config.json` 中的 `news_api_key`
-- 或使用模拟数据模式（默认）
+不打真实 akshare / yfinance / FinBERT 模型；CI 不需要任何 API key 或 GPU。
 
-**Q: 情感分析结果不准确**
-- 增加新闻数量（修改 `max_articles`）
-- 调整情感阈值（修改 `sentiment_threshold`）
+## 七、合规边界
 
-## 🤝 贡献
+- akshare 抓的是东方财富等公开渠道的免费新闻摘要
+- 本工具不绕过付费墙、不爬限制访问内容
+- 情感分析结果**不构成投资建议**，仅作为定量信号供策略参考
 
-欢迎提交 Issue 和 Pull Request！
+## License
 
-## 📄 许可证
-
-Apache License 2.0
-
-基于原 stocksight 项目简化：https://github.com/shirosaidev/stocksight
-
-## 🙏 致谢
-
-- 原 stocksight 项目作者：Chris Park
-- TextBlob: https://textblob.readthedocs.io/
-- VADER Sentiment: https://github.com/cjhutto/vaderSentiment
-- NewsAPI: https://newsapi.org/
-
----
-
-**Made with ⭐ for OpenClaw**
+MIT
