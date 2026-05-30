@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # 运行时声明依赖（vaderSentiment / textblob / requests / numpy）
+          pip install -r requirements.txt
+          # 测试额外需要：pandas（news_sources 测试在模块顶部 import pandas）+ pytest
+          # akshare / yfinance / snownlp 在测试里被 mock 或 importorskip，无需安装
+          # FinBERT(transformers/torch) 为可选重型后端，测试不覆盖，故不安装
+          pip install pytest pandas
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+      - name: Run tests
+        run: python -m pytest tests/ -q
