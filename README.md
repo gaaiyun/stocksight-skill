@@ -124,8 +124,7 @@ akshare 已经包装了东方财富的公开接口，处理了反爬限速，不
 ├── __main__.py                   CLI (news / analyze / sentiment / list-backends)
 ├── scripts/
 │   ├── news_sources.py           akshare / yfinance / NewsAPI 三源 + 自动路由
-│   ├── sentiment.py              4 backend 情感分析 + 语言自动路由 + 聚合
-│   └── stocksight.py             v1 留存的 CLI（兼容）
+│   └── sentiment.py              4 backend 情感分析 + 语言自动路由 + 聚合
 ├── tests/
 │   ├── test_news_sources.py      monkeypatch 不打真实网络
 │   └── test_sentiment.py         polarity / label / aggregate 数学性质
