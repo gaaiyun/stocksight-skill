@@ -1,15 +1,20 @@
-# 🚀 stocksight 快速开始指南
+# stocksight 快速开始指南
 
 ## 1 分钟上手
 
 ### 步骤 1: 安装依赖
 
 ```bash
-cd stocksight-skill
 pip install -r requirements.txt
+# 用 A 股新闻
+pip install akshare
+# 用美股新闻
+pip install yfinance
+# 用 FinBERT（可选，模型较大）
+pip install transformers torch
 ```
 
-### 步骤 2: 下载 NLTK 数据
+### 步骤 2: 下载 NLTK 数据（VADER / TextBlob 需要）
 
 ```bash
 python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
@@ -18,83 +23,65 @@ python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
 ### 步骤 3: 运行分析
 
 ```bash
-# 分析股票情感
-python scripts/stocksight.py --symbol TSLA --analyze
+# 拉新闻清单
+python __main__.py news 600519                # 茅台 A 股新闻
+python __main__.py news AAPL                  # 苹果美股新闻
 
-# 生成价格预测
-python scripts/stocksight.py --symbol AAPL --predict
+# 新闻 + 情感分析 → 聚合信号
+python __main__.py analyze 600519 --backend snownlp
+python __main__.py analyze TSLA --backend finbert
 
-# 查看历史记录
-python scripts/stocksight.py --symbol NVDA --history
+# 单段文本快速测
+python __main__.py sentiment "苹果发布新品大获成功" --backend snownlp
+python __main__.py sentiment "The company filed for bankruptcy" --backend vader
+
+# 看支持的 backend
+python __main__.py list-backends
 ```
 
-## OpenClaw 集成
+## 输出示例
 
-### 作为 Skill 使用
-
-在 OpenClaw 中调用：
-
-```bash
-# Markdown 格式输出
-python openclaw_integration.py --action analyze --symbol TSLA --format markdown
-
-# JSON 格式输出（程序化使用）
-python openclaw_integration.py --action predict --symbol AAPL --format json
-```
-
-### 输出示例
-
-```markdown
-## 📊 Stocksight 分析：TSLA
-
-### 💭 情感分析
-
-- **总体情感**: POSITIVE
-- **极性值**: 0.209
-- **分析文章数**: 5
-
-### 📈 情感分布
-
-- ✅ 正面：4
-- ➖ 中性：1
-- ❌ 负面：0
-
-### 🔮 价格预测
-
-- **方向**: 📈 UP
-- **置信度**: 72.5%
+```json
+{
+  "symbol": "600519",
+  "n_items": 20,
+  "backend": "snownlp",
+  "aggregate": {
+    "n": 20,
+    "mean_polarity": 0.21,
+    "label_dist": { "positive": 14, "neutral": 4, "negative": 2 },
+    "signal": "positive"
+  }
+}
 ```
 
 ## 常用命令速查
 
 | 命令 | 说明 |
 |------|------|
-| `python scripts/stocksight.py -s TSLA -a` | 分析 TSLA 情感 |
-| `python scripts/stocksight.py -s AAPL -n` | 获取 AAPL 新闻并分析 |
-| `python scripts/stocksight.py -s NVDA -p` | 预测 NVDA 价格走势 |
-| `python scripts/stocksight.py -s TSLA --history` | 查看 TSLA 历史 |
-| `python scripts/stocksight.py -s TSLA -a -v` | 详细模式分析 |
+| `python __main__.py news 600519` | 拉茅台 A 股新闻 |
+| `python __main__.py news AAPL` | 拉苹果美股新闻 |
+| `python __main__.py analyze 600519 --backend snownlp` | 中文新闻情感聚合 |
+| `python __main__.py analyze TSLA --backend finbert` | 用金融领域 BERT 分析美股 |
+| `python __main__.py sentiment "<文本>" --backend vader` | 单段文本情感 |
+| `python __main__.py list-backends` | 列出支持的 backend |
 
 ## 配置 API（可选）
 
-编辑 `config.json`：
+A 股（akshare）和美股（yfinance）走公开渠道，不需要 key。若要用 NewsAPI 源，设置环境变量：
 
-```json
-{
-  "news_api_key": "YOUR_NEWSAPI_KEY"
-}
+```bash
+export NEWSAPI_KEY=YOUR_NEWSAPI_KEY
 ```
 
 获取 NewsAPI 密钥：https://newsapi.org/
 
-**注意**：即使没有 API 密钥，工具也会使用模拟数据运行。
-
 ## 下一步
 
-- 📖 查看完整文档：`README.md`
-- 🔧 查看 API 文档：`references/api-docs.md`
-- 💬 查看 Skill 定义：`SKILL.md`
+- 完整文档：`README.md`
+- API 文档：`references/api-docs.md`
+- Skill 定义：`SKILL.md`
 
 ---
 
-**有问题？** 查看 `README.md` 的故障排除部分。
+有问题？查看 `README.md`。
