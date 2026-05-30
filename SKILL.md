@@ -1,6 +1,6 @@
 # stocksight - 股市情感分析 Skill
 
-**简化版 stocksight for OpenClaw** - 基于 Twitter/新闻情感分析的股市预测工具
+基于新闻情感分析的股市信号工具（简化自原 stocksight 项目）
 
 ## 功能特性
 
@@ -95,7 +95,7 @@ pip install -r requirements.txt
 
 ```
 stocksight-skill/
-├── SKILL.md              # OpenClaw Skill 定义
+├── SKILL.md              # Skill 定义
 ├── README.md             # 使用说明
 ├── requirements.txt      # Python 依赖
 ├── config.json           # 配置文件
